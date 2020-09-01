@@ -1,0 +1,120 @@
+Servlets
+Servlets provide a component-based, platform-independent method for building Web based applications, without the performance limitations of CGI programs. Servlets have access to the entire family of Java APIs, including the JDBC API to access enterprise databases. This tutorial will teach you how to use Java Servlets to develop your web based applications in simple and easy steps.
+Why to Learn Servlet?
+Using Servlets, you can collect input from users through web page forms, present records from a database or another source, and create web pages dynamically.
+Java Servlets often serve the same purpose as programs implemented using the Common Gateway Interface (CGI). But Servlets offer several advantages in comparison with the CGI.
+? Performance is significantly better.
+? Servlets execute within the address space of a Web server. It is not necessary to create a separate process to handle each client request.
+? Servlets are platform-independent because they are written in Java.
+? Java security manager on the server enforces a set of restrictions to protect the resources on a server machine. So servlets are trusted.
+? The full functionality of the Java class libraries is available to a servlet. It can communicate with applets, databases, or other software via the sockets and RMI mechanisms that you have seen already.
+Applications of Servlet
+? Read the explicit data sent by the clients (browsers). This includes an HTML form on a Web page or it could also come from an applet or a custom HTTP client program.
+? Read the implicit HTTP request data sent by the clients (browsers). This includes cookies, media types and compression schemes the browser understands, and so forth.
+? Process the data and generate the results. This process may require talking to a database, executing an RMI or CORBA call, invoking a Web service, or computing the response directly.
+? Send the explicit data (i.e., the document) to the clients (browsers). This document can be sent in a variety of formats, including text (HTML or XML), binary (GIF images), Excel, etc.
+? Send the implicit HTTP response to the clients (browsers). This includes telling the browsers or other clients what type of document is being returned (e.g., HTML), setting cookies and caching parameters, and other such tasks.
+Servlets are Java classes which service HTTP requests and implement the javax.servlet.Servlet interface. Web application developers typically write servlets that extend javax.servlet.http.HttpServlet, an abstract class that implements the Servlet interface and is specially designed to handle HTTP requests.
+Sample Code
+Following is the sample source code structure of a servlet example to show Hello World - // Import required java libraries import java.io.*; import javax.servlet.*; import javax.servlet.http.*;
+// Extend HttpServlet class public class HelloWorld extends HttpServlet {
+private String message;
+public void init() throws ServletException { // Do required initialization message = "Hello World"; }
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+// Set response content type response.setContentType("text/html");
+// Actual logic goes here. PrintWriter out = response.getWriter(); out.println("<h1>" + message + "</h1>"); }
+public void destroy() { // do nothing. } }
+Compiling a Servlet
+Let us create a file with name HelloWorld.java with the code shown above. Place this file at C:\ServletDevel (in Windows) or at /usr/ServletDevel (in Unix). This path location must be added to CLASSPATH before proceeding further.
+Assuming your environment is setup properly, go in ServletDevel directory and compile HelloWorld.java as follows - $ javac HelloWorld.java
+If the servlet depends on any other libraries, you have to include those JAR files on your CLASSPATH as well. I have included only servlet-api.jar JAR file because I'm not using any other library in Hello World program.
+This command line uses the built-in javac compiler that comes with the Sun Microsystems Java Software Development Kit (JDK). For this command to work properly, you have to include the location of the Java SDK that you are using in the PATH environment variable.
+If everything goes fine, above compilation would produce HelloWorld.class file in the same directory. Next section would explain how a compiled servlet would be deployed in production.
+Servlet Deployment
+By default, a servlet application is located at the path <Tomcat-installationdirectory>/webapps/ROOT and the class file would reside in <Tomcat-installationdirectory>/webapps/ROOT/WEB-INF/classes.
+If you have a fully qualified class name of com.myorg.MyServlet, then this servlet class must be located in WEB-INF/classes/com/myorg/MyServlet.class.
+For now, let us copy HelloWorld.class into <Tomcat-installationdirectory>/webapps/ROOT/WEB-INF/classes and create following entries in web.xml file located in <Tomcat-installation-directory>/webapps/ROOT/WEB-INF/ <servlet> <servlet-name>HelloWorld</servlet-name> <servlet-class>HelloWorld</servlet-class> </servlet>
+<servlet-mapping> <servlet-name>HelloWorld</servlet-name> <url-pattern>/HelloWorld</url-pattern> </servlet-mapping>
+Above entries to be created inside <web-app>...</web-app> tags available in web.xml file. There could be various entries in this table already available, but never mind.
+You are almost done, now let us start tomcat server using <Tomcat-installationdirectory>\bin\startup.bat (on Windows) or <Tomcat-installationdirectory>/bin/startup.sh (on Linux/Solaris etc.) and finally type http://localhost:8080/HelloWorld in the browser's address box. If everything goes fine, you would get the following result
+Servlets - Client HTTP Request
+When a browser requests for a web page, it sends lot of information to the web server which cannot be read directly because this information travel as a part of header of HTTP request. You can check HTTP Protocol for more information on this.
+Methods to read HTTP Header
+There are following methods which can be used to read HTTP header in your servlet program. These methods are available with HttpServletRequest object Method & Description
+Cookie[] getCookies()
+Returns an array containing all of the Cookie objects the client sent with this request.
+Enumeration getAttributeNames()
+Returns an Enumeration containing the names of the attributes available to this request.
+Enumeration getHeaderNames()
+Returns an enumeration of all the header names this request contains.
+Enumeration getParameterNames()
+Returns an Enumeration of String objects containing the names of the parameters contained in this request
+HttpSession getSession()
+Returns the current session associated with this request, or if the request does not have a session, creates one.
+HttpSession getSession(boolean create)
+Returns the current HttpSession associated with this request or, if if there is no current session and value of create is true, returns a new session.
+Object getAttribute(String name)
+Returns the value of the named attribute as an Object, or null if no attribute of the given name exists.
+String getContentType()
+Returns the MIME type of the body of the request, or null if the type is not known.
+String getMethod()
+Returns the name of the HTTP method with which this request was made, for example, GET, POST, or PUT.
+String getParameter(String name)
+Returns the value of a request parameter as a String, or null if the parameter does not exist.
+String getRequestedSessionId()
+Returns the session ID specified by the client.
+String[] getParameterValues(String name)
+Returns an array of String objects containing all of the values the given request parameter has, or null if the parameter does not exist.
+HTTP Header Request Example
+Following is the example which uses getHeaderNames() method of HttpServletRequest to read the HTTP header information. This method returns an Enumeration that contains the header information associated with the current HTTP request.
+Once we have an Enumeration, we can loop down the Enumeration in the standard manner, using hasMoreElements() method to determine when to stop and using nextElement() method to get each parameter name // Import required java libraries import java.io.*; import javax.servlet.*; import javax.servlet.http.*; import java.util.*;
+// Extend HttpServlet class public class DisplayHeader extends HttpServlet {
+// Method to handle GET method request. public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+// Set response content type response.setContentType("text/html");
+PrintWriter out = response.getWriter(); String title = "HTTP Header Request Example"; String docType = "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
+out.println(docType + "<html>\n" + "<head><title>" + title + "</title></head>\n"+ "<body bgcolor = \"#f0f0f0\">\n" + "<h1 align = \"center\">" + title + "</h1>\n" +
+"<table width = \"100%\" border = \"1\" align = \"center\">\n" + "<tr bgcolor = \"#949494\">\n" + "<th>Header Name</th><th>Header Value(s)</th>\n"+ "</tr>\n" );
+Enumeration headerNames = request.getHeaderNames();
+while(headerNames.hasMoreElements()) { String paramName = (String)headerNames.nextElement(); out.print("<tr><td>" + paramName + "</td>\n"); String paramValue = request.getHeader(paramName); out.println("<td> " + paramValue + "</td></tr>\n"); } out.println("</table>\n</body></html>"); }
+// Method to handle POST method request. public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+doGet(request, response); } }
+Now calling the above servlet would generate the following result - HTTP Header Request Example
+Servlets - Server HTTP Response
+HTTP Header Response Example
+You already have seen setContentType() method working in previous examples and following example would also use same method, additionally we would use setIntHeader() method to set Refresh header.
+// Import required java libraries import java.io.*; import javax.servlet.*; import javax.servlet.http.*; import java.util.*;
+// Extend HttpServlet class public class Refresh extends HttpServlet {
+// Method to handle GET method request. public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+// Set refresh, autoload time as 5 seconds response.setIntHeader("Refresh", 5);
+// Set response content type response.setContentType("text/html");
+// Get current time Calendar calendar = new GregorianCalendar(); String am_pm; int hour = calendar.get(Calendar.HOUR); int minute = calendar.get(Calendar.MINUTE); int second = calendar.get(Calendar.SECOND);
+if(calendar.get(Calendar.AM_PM) == 0) am_pm = "AM"; else am_pm = "PM";
+String CT = hour+":"+ minute +":"+ second +" "+ am_pm;
+PrintWriter out = response.getWriter(); String title = "Auto Refresh Header Setting"; String docType = "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
+out.println(docType + "<html>\n" +
+"<head><title>" + title + "</title></head>\n"+ "<body bgcolor = \"#f0f0f0\">\n" + "<h1 align = \"center\">" + title + "</h1>\n" + "<p>Current Time is: " + CT + "</p>\n" ); }
+// Method to handle POST method request. public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+doGet(request, response); } }
+Now calling the above servlet would display current system time after every 5 seconds as follows. Just run the servlet and wait to see the result - Auto Refresh Header Setting
+Current Time is: 9:44:50 PM
+Java Server Pages
+Java Server Pages (JSP) is a server-side programming technology that enables the creation of dynamic, platform-independent method for building Web-based applications. JSP have access to the entire family of Java APIs, including the JDBC API to access enterprise databases. This tutorial will teach you how to use Java Server Pages to develop your web applications in simple and easy steps.
+Why to Learn JSP?
+JavaServer Pages often serve the same purpose as programs implemented using the Common Gateway Interface (CGI). But JSP offers several advantages in comparison with the CGI.
+? Performance is significantly better because JSP allows embedding Dynamic Elements in HTML Pages itself instead of having separate CGI files.
+? JSP are always compiled before they are processed by the server unlike CGI/Perl which requires the server to load an interpreter and the target script each time the page is requested.
+? JavaServer Pages are built on top of the Java Servlets API, so like Servlets, JSP also has access to all the powerful Enterprise Java APIs, including JDBC, JNDI, EJB, JAXP, etc.
+? JSP pages can be used in combination with servlets that handle the business logic, the model supported by Java servlet template engines.
+Finally, JSP is an integral part of Java EE, a complete platform for enterprise class applications. This means that JSP can play a part in the simplest applications to the most complex and demanding.
+Applications of JSP
+As mentioned before, JSP is one of the most widely used language over the web. I'm going to list few of them here:
+JSP vs. Active Server Pages (ASP)
+The advantages of JSP are twofold. First, the dynamic part is written in Java, not Visual Basic or other MS specific language, so it is more powerful and easier to use. Second, it is portable to other operating systems and non-Microsoft Web servers.
+JSP vs. Pure Servlets
+It is more convenient to write (and to modify!) regular HTML than to have plenty of println statements that generate the HTML.
+JSP vs. Server-Side Includes (SSI)
+SSI is really only intended for simple inclusions, not for "real" programs that use form data, make database connections, and the like.
+JSP vs. JavaScript
+JavaScript can generate HTML dynamically on the client but can hardly interact with the web server to perform complex tasks like database access and image processing etc.
+JSP vs. Static HTML
+Regular HTML, of course, cannot contain dynamic information.
